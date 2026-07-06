@@ -11,3 +11,6 @@ Route::get('/', function () {
 Route::get('/monitoring', function () {
     return view('monitoring');
 });
+Route::get('/news', function () {
+    return view('news');
+});

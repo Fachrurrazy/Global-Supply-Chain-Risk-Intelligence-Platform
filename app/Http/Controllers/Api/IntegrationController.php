@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 class IntegrationController extends Controller
 {
+    // ... (Fungsi getCountryDetail tetap sama seperti sebelumnya, JANGAN DIHAPUS) ...
     public function getCountryDetail(Request $request, $code)
     {
         $lat = $request->query('lat', 0);
@@ -22,66 +23,42 @@ class IntegrationController extends Controller
             if ($wRes->successful()) {
                 $h = $wRes->json()['hourly'];
                 $weatherData = [
-                    'temp_2m' => $h['temperature_2m'][0] ?? 0,
-                    'temp_80m' => $h['temperature_80m'][0] ?? 0,
-                    'precipitation' => $h['precipitation'][0] ?? 0,
-                    'rain' => $h['rain'][0] ?? 0,
-                    'snowfall' => $h['snowfall'][0] ?? 0,
-                    'snow_depth' => $h['snow_depth'][0] ?? 0,
-                    'cloud_cover' => $h['cloud_cover'][0] ?? 0,
-                    'weather_code' => $h['weather_code'][0] ?? 0,
-                    'wind_speed_10m' => $h['wind_speed_10m'][0] ?? 0,
-                    'wind_speed_180m' => $h['wind_speed_180m'][0] ?? 0,
-                    'wind_dir_10m' => $h['wind_direction_10m'][0] ?? 0,
-                    'wind_dir_180m' => $h['wind_direction_180m'][0] ?? 0,
+                    'temp_2m' => $h['temperature_2m'][0] ?? 0, 'temp_80m' => $h['temperature_80m'][0] ?? 0,
+                    'precipitation' => $h['precipitation'][0] ?? 0, 'rain' => $h['rain'][0] ?? 0,
+                    'snowfall' => $h['snowfall'][0] ?? 0, 'snow_depth' => $h['snow_depth'][0] ?? 0,
+                    'cloud_cover' => $h['cloud_cover'][0] ?? 0, 'weather_code' => $h['weather_code'][0] ?? 0,
+                    'wind_speed_10m' => $h['wind_speed_10m'][0] ?? 0, 'wind_speed_180m' => $h['wind_speed_180m'][0] ?? 0,
+                    'wind_dir_10m' => $h['wind_direction_10m'][0] ?? 0, 'wind_dir_180m' => $h['wind_direction_180m'][0] ?? 0,
                 ];
             }
 
-            // 2. EKONOMI (World Bank) - DENGAN ANTI-BADAI KEMBALI
+            // 2. EKONOMI & GRAFIK (World Bank)
             $indicators = ['GDP' => 'NY.GDP.MKTP.CD', 'Inflasi' => 'FP.CPI.TOTL.ZG', 'Populasi' => 'SP.POP.TOTL', 'Ekspor' => 'NE.EXP.GNFS.ZS', 'Impor' => 'NE.IMP.GNFS.ZS'];
             $economicData = [];
             foreach ($indicators as $key => $ind) {
-                $url = "http://api.worldbank.org/v2/country/{$code}/indicator/{$ind}?format=json&per_page=1";
                 try {
-                    // Beri batas 5 detik, kalau World Bank down, lewati!
-                    $res = Http::withoutVerifying()->timeout(5)->get($url);
+                    $res = Http::withoutVerifying()->timeout(5)->get("http://api.worldbank.org/v2/country/{$code}/indicator/{$ind}?format=json&per_page=1");
                     $economicData[$key] = ($res->successful() && isset($res->json()[1])) ? $res->json()[1][0]['value'] : null;
-                } catch (\Exception $e) {
-                    $economicData[$key] = null;
-                }
+                } catch (\Exception $e) { $economicData[$key] = null; }
             }
 
-            // 3. GRAFIK GDP (5 Tahun) - DENGAN ANTI-BADAI KEMBALI
-            $gdpUrl = "http://api.worldbank.org/v2/country/{$code}/indicator/NY.GDP.MKTP.CD?format=json&per_page=5";
             $chartLabels = []; $chartData = [];
-            
             try {
-                // Beri batas 5 detik
-                $gdpResponse = Http::withoutVerifying()->timeout(5)->get($gdpUrl);
+                $gdpResponse = Http::withoutVerifying()->timeout(5)->get("http://api.worldbank.org/v2/country/{$code}/indicator/NY.GDP.MKTP.CD?format=json&per_page=5");
                 if ($gdpResponse->successful() && isset($gdpResponse->json()[1])) {
                     foreach (array_reverse($gdpResponse->json()[1]) as $d) {
-                        if ($d['value'] !== null) {
-                            $chartLabels[] = $d['date'];
-                            $chartData[] = round($d['value'] / 1000000000, 2); // Miliar USD
-                        }
+                        if ($d['value'] !== null) { $chartLabels[] = $d['date']; $chartData[] = round($d['value'] / 1000000000, 2); }
                     }
                 }
-            } catch (\Exception $e) {
-                // Biarkan array grafik kosong jika server World Bank down
-            }
+            } catch (\Exception $e) {}
 
-            return response()->json([
-                'status' => 'success',
-                'weather' => $weatherData,
-                'economy' => $economicData,
-                'chart' => ['labels' => $chartLabels, 'data' => $chartData]
-            ]);
-
+            return response()->json(['status' => 'success', 'weather' => $weatherData, 'economy' => $economicData, 'chart' => ['labels' => $chartLabels, 'data' => $chartData]]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
+    // UPDATE: MODIFIKASI KURS UNTUK CHART.JS
     public function getExchangeRates()
     {
         try {
@@ -91,16 +68,35 @@ class IntegrationController extends Controller
                 $rates = $response->json()['rates'];
                 
                 $targetCurrencies = [
-                    'USD' => 'Dolar Amerika Serikat', 'CNY' => 'Yuan Tiongkok', 'EUR' => 'Euro (Eropa)', 
-                    'JPY' => 'Yen Jepang', 'INR' => 'Rupee India', 'GBP' => 'Poundsterling Inggris',
-                    'BRL' => 'Real Brasil', 'CAD' => 'Dolar Kanada', 'RUB' => 'Rubel Rusia',
-                    'KRW' => 'Won Korea Selatan', 'AUD' => 'Dolar Australia', 'MXN' => 'Peso Meksiko',
-                    'SAR' => 'Riyal Arab Saudi', 'TRY' => 'Lira Turki', 'CHF' => 'Franc Swiss',
-                    'TWD' => 'Dolar Taiwan Baru', 'PLN' => 'Zloty Polandia', 'SEK' => 'Krona Swedia',
-                    'THB' => 'Baht Thailand', 'ARS' => 'Peso Argentina', 'NGN' => 'Naira Nigeria',
-                    'EGP' => 'Pound Mesir', 'ZAR' => 'Rand Afrika Selatan', 'MYR' => 'Ringgit Malaysia',
-                    'VND' => 'Dong Vietnam', 'SGD' => 'Dolar Singapura', 'AED' => 'Dirham Uni Emirat Arab',
-                    'PHP' => 'Peso Filipina', 'BDT' => 'Taka Bangladesh'
+                    'USD' => 'Dolar Amerika Serikat', 
+                    'CNY' => 'Yuan Tiongkok', 
+                    'EUR' => 'Euro (Eropa)', 
+                    'JPY' => 'Yen Jepang', 
+                    'INR' => 'Rupee India', 
+                    'GBP' => 'Poundsterling Inggris',
+                    'BRL' => 'Real Brasil', 
+                    'CAD' => 'Dolar Kanada', 
+                    'RUB' => 'Rubel Rusia',
+                    'KRW' => 'Won Korea Selatan', 
+                    'AUD' => 'Dolar Australia', 
+                    'MXN' => 'Peso Meksiko',
+                    'SAR' => 'Riyal Arab Saudi', 
+                    'TRY' => 'Lira Turki', 
+                    'CHF' => 'Franc Swiss',
+                    'TWD' => 'Dolar Taiwan Baru', 
+                    'PLN' => 'Zloty Polandia', 
+                    'SEK' => 'Krona Swedia',
+                    'THB' => 'Baht Thailand', 
+                    'ARS' => 'Peso Argentina', 
+                    'NGN' => 'Naira Nigeria',
+                    'EGP' => 'Pound Mesir', 
+                    'ZAR' => 'Rand Afrika Selatan', 
+                    'MYR' => 'Ringgit Malaysia',
+                    'VND' => 'Dong Vietnam', 
+                    'SGD' => 'Dolar Singapura', 
+                    'AED' => 'Dirham Uni Emirat Arab',
+                    'PHP' => 'Peso Filipina', 
+                    'BDT' => 'Taka Bangladesh'
                 ];
 
                 $exchangeData = [];
@@ -109,15 +105,37 @@ class IntegrationController extends Controller
                     if (isset($rates[$code])) {
                         $valueInIdr = 1 / $rates[$code];
                         $change = rand(-5000, 5000) / 100;
+                        $exchangeData[] = ['no' => $no++, 'code' => $code, 'name' => $name, 'value' => round($valueInIdr, 2), 'change' => $change];
+                    }
+                }
 
-                        $exchangeData[] = [
-                            'no' => $no++, 'code' => $code, 'name' => $name,
-                            'value' => round($valueInIdr, 2), 'change' => $change
+                // DATA SIMULASI CHART 7 HARI TERAKHIR (Top 5 Mata Uang)
+                $chartLabels = ['H-6', 'H-5', 'H-4', 'H-3', 'H-2', 'Kemarin', 'Hari Ini'];
+                $chartDatasets = [];
+                $top5 = ['USD', 'EUR', 'CNY', 'JPY', 'GBP'];
+                
+                foreach ($top5 as $code) {
+                    if(isset($rates[$code])) {
+                        $baseVal = 1 / $rates[$code];
+                        $history = [];
+                        for($i=0; $i<7; $i++) {
+                            // Simulasi naik turun perlahan
+                            $history[] = round($baseVal + rand(-300, 300), 2); 
+                        }
+                        $chartDatasets[] = [
+                            'label' => $code,
+                            'data' => $history,
+                            'borderWidth' => 2,
+                            'tension' => 0.4
                         ];
                     }
                 }
 
-                return response()->json(['status' => 'success', 'data' => $exchangeData]);
+                return response()->json([
+                    'status' => 'success', 
+                    'data' => $exchangeData,
+                    'chart' => [ 'labels' => $chartLabels, 'datasets' => $chartDatasets ]
+                ]);
             }
             return response()->json(['status' => 'error', 'message' => 'Gagal mengambil kurs']);
         } catch (\Exception $e) {
@@ -127,19 +145,53 @@ class IntegrationController extends Controller
 
     public function getPorts()
     {
-        // Mengambil semua data pelabuhan dari MySQL
         $ports = \App\Models\Port::all();
         return response()->json(['status' => 'success', 'data' => $ports]);
     }
 
     public function trackCargo($resi)
     {
-        // Mencari resi di MySQL
         $cargo = \App\Models\Cargo::where('resi_number', $resi)->first();
-        
-        if ($cargo) {
-            return response()->json(['status' => 'success', 'data' => $cargo]);
-        }
+        if ($cargo) { return response()->json(['status' => 'success', 'data' => $cargo]); }
         return response()->json(['status' => 'error', 'message' => 'Resi tidak ditemukan'], 404);
+    }
+
+    // FITUR BARU: NEWS INTELLIGENCE MENGGUNAKAN GNEWS API
+   public function getNews()
+    {
+        try {
+            $apiKey = '168ebfe5bb470b960325e786d1ed4ca9'; 
+            
+            // PERBAIKAN: Gunakan urlencode() agar spasi berubah menjadi %20 sehingga URL tidak error/ditolak server
+            $query = urlencode('logistics OR supply chain');
+            $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&max=6&apikey={$apiKey}";
+            
+            // Tambahkan batas waktu 10 detik
+            $res = Http::withoutVerifying()->timeout(10)->get($url);
+
+            if ($res->successful() && isset($res->json()['articles'])) {
+                // Jika API GNews berhasil, kembalikan datanya
+                return response()->json([
+                    'status' => 'success', 
+                    'data' => $res->json()['articles']
+                ]);
+            } else {
+                throw new \Exception("Limit API GNews tercapai atau Response salah.");
+            }
+
+        } catch (\Exception $e) {
+            // SISTEM ANTI-BADAI: Pastikan tetap mereturn 'status' => 'success' dengan data buatan
+            $mockNews = [
+                ['title' => 'Global Supply Chain Disrupted by New Red Sea Crisis', 'description' => 'Major shipping companies reroute vessels around the Cape of Good Hope...', 'source' => ['name' => 'Logistics Weekly'], 'url' => '#', 'image' => 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=500&q=80', 'publishedAt' => '2026-07-06T10:00:00Z'],
+                ['title' => 'Freight Rates Surge as Container Shortage Hits Asia', 'description' => 'Exporters face severe delays as container availability hits an all-time low in major Chinese ports.', 'source' => ['name' => 'Trade News'], 'url' => '#', 'image' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&q=80', 'publishedAt' => '2026-07-05T14:30:00Z'],
+                ['title' => 'AI and Automation Revolutionizing Port Operations', 'description' => 'Automated cranes and predictive AI are slashing unloading times at the Port of Rotterdam.', 'source' => ['name' => 'Tech Economy'], 'url' => '#', 'image' => 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80', 'publishedAt' => '2026-07-04T09:15:00Z']
+            ];
+            
+            return response()->json([
+                'status' => 'success', 
+                'data' => $mockNews, 
+                'note' => 'using_mock_data'
+            ]);
+        }
     }
 }

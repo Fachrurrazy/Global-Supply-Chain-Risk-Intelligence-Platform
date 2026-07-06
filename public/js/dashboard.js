@@ -115,42 +115,60 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
     // ==========================================
-    // 4. FETCH DATA KURS MATA UANG (DI BAWAH PETA)
+    // 4. FETCH DATA KURS MATA UANG & RENDER CHART.JS
     // ==========================================
     fetch('/api/exchange-rates')
         .then(res => res.json())
         .then(data => {
             const tbody = document.getElementById('exchangeTableBody');
             if(data.status === 'success' && tbody) {
-                tbody.innerHTML = ''; // Kosongkan tulisan "Mengambil data..."
-                
+                tbody.innerHTML = ''; 
                 data.data.forEach(item => {
-                    // Format angka menjadi Rupiah yang cantik (misal: Rp 15.503,00)
                     let valStr = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.value);
-                    
-                    // Logika warna dan ikon panah (Naik = Biru/Hijau, Turun = Merah)
                     let isUp = item.change >= 0;
-                    let changeColor = isUp ? 'text-primary' : 'text-danger'; // Biru untuk naik, merah untuk turun
+                    let changeColor = isUp ? 'text-primary' : 'text-danger';
                     let changeIcon = isUp ? '▲' : '▼';
                     let changeStr = `${Math.abs(item.change).toFixed(2)} ${changeIcon}`;
-
-                    // Trik Cerdas: Mengambil bendera otomatis menggunakan 2 huruf depan mata uang
-                    // (misal: USD -> US, EUR -> EU)
                     let flagCode = item.code.substring(0, 2).toLowerCase();
                     let flagUrl = `https://flagcdn.com/24x18/${flagCode}.png`;
 
                     tbody.innerHTML += `
                         <tr>
                             <td>${item.no}</td>
-                            <td class="text-start">
-                                <img src="${flagUrl}" alt="${item.code}" class="me-2 shadow-sm" style="border: 1px solid #ccc; border-radius: 2px;">
-                                ${item.name} (${item.code})
-                            </td>
+                            <td class="text-start"><img src="${flagUrl}" class="me-2 shadow-sm" style="border: 1px solid #ccc;"> ${item.name} (${item.code})</td>
                             <td><strong>${valStr}</strong></td>
                             <td class="${changeColor}"><strong>${changeStr}</strong></td>
                         </tr>
                     `;
                 });
+
+                // RENDER CHART.JS MATA UANG
+                const ctxCurrency = document.getElementById('currencyChart');
+                if (ctxCurrency) {
+                    // Warna garis untuk setiap negara agar estetik
+                    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+                    
+                    data.chart.datasets.forEach((dataset, index) => {
+                        dataset.borderColor = colors[index % colors.length];
+                        dataset.backgroundColor = 'transparent';
+                    });
+
+                    new Chart(ctxCurrency.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: data.chart.labels,
+                            datasets: data.chart.datasets
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { labels: { color: 'white' } } },
+                            scales: {
+                                y: { ticks: { color: 'gray' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                                x: { ticks: { color: 'gray' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                            }
+                        }
+                    });
+                }
             }
         })
         .catch(err => console.error('Gagal memuat kurs:', err));

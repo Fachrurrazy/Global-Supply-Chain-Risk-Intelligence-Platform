@@ -13,3 +13,5 @@ Route::get('/exchange-rates', [IntegrationController::class, 'getExchangeRates']
 // Route untuk Halaman Monitoring
 Route::get('/ports', [\App\Http\Controllers\Api\IntegrationController::class, 'getPorts']);
 Route::get('/track-cargo/{resi}', [\App\Http\Controllers\Api\IntegrationController::class, 'trackCargo']);
+// news
+Route::get('/news', [\App\Http\Controllers\Api\IntegrationController::class, 'getNews']);
