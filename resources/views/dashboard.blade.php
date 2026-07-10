@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="id" data-theme="light">
 <head>
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Supply Chain Risk Intelligence</title>
@@ -263,9 +269,14 @@
                         <td id="tdExp1">-</td>
                         <td id="tdExp2">-</td>
                     </tr>
-                </tbody>
-            </table>
-        </div>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4" id="compareChartWrapper" style="display: none;">
+                    <canvas id="compareChart" style="width: 100%; max-height: 300px;"></canvas>
+                </div>
+            </div>
       </div>
     </div>
   </div>

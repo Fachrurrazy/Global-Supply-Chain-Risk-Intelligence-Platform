@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="id" data-theme="light">
 <head>
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Intelligence - Global Supply Chain</title>
@@ -76,10 +82,15 @@
 <script>
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
+        let currentTheme = document.documentElement.getAttribute('data-theme');
+        themeToggle.innerText = currentTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
+
         themeToggle.addEventListener('click', () => {
-            let currentTheme = document.documentElement.getAttribute('data-theme');
+            currentTheme = document.documentElement.getAttribute('data-theme');
             let targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('theme', targetTheme);
+            themeToggle.innerText = targetTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
         });
     }
 

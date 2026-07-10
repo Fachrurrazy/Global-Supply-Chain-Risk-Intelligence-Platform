@@ -2,10 +2,15 @@ document.addEventListener("DOMContentLoaded", function() {
     // 1. Logika Tema
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
+        // Inisialisasi teks tombol berdasarkan tema saat ini
+        let currentTheme = document.documentElement.getAttribute('data-theme');
+        themeToggle.innerText = currentTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
+
         themeToggle.addEventListener('click', () => {
-            let currentTheme = document.documentElement.getAttribute('data-theme');
+            currentTheme = document.documentElement.getAttribute('data-theme');
             let targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('theme', targetTheme);
             themeToggle.innerText = targetTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
         });
     }
@@ -258,6 +263,90 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Export
                     document.getElementById('tdExp1').innerText = data1.economy.Ekspor ? data1.economy.Ekspor.toFixed(1) + '%' : 'N/A';
                     document.getElementById('tdExp2').innerText = data2.economy.Ekspor ? data2.economy.Ekspor.toFixed(1) + '%' : 'N/A';
+
+                    // --- RENDER COMPARE CHART ---
+                    const chartWrapper = document.getElementById('compareChartWrapper');
+                    if (chartWrapper) {
+                        chartWrapper.style.display = 'block';
+                        const ctx = document.getElementById('compareChart').getContext('2d');
+                        
+                        if (window.compareChartInstance) {
+                            window.compareChartInstance.destroy();
+                        }
+                        
+                        const labels = ['Risk Score', 'Inflation (%)', 'Export (% GDP)'];
+                        const dataset1 = [
+                            data1.risk.score || 0,
+                            data1.economy.Inflasi || 0,
+                            data1.economy.Ekspor || 0
+                        ];
+                        const dataset2 = [
+                            data2.risk.score || 0,
+                            data2.economy.Inflasi || 0,
+                            data2.economy.Ekspor || 0
+                        ];
+
+                        window.compareChartInstance = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: opt1.text,
+                                        data: dataset1,
+                                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 4
+                                    },
+                                    {
+                                        label: opt2.text,
+                                        data: dataset2,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                        borderColor: 'rgba(255, 99, 132, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 4
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            color: '#333',
+                                            font: {
+                                                size: 14
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.1)'
+                                        },
+                                        ticks: {
+                                            color: '#555'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            color: '#555',
+                                            font: {
+                                                size: 13
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
                 } else {
                     alert("Gagal mengambil data perbandingan.");
                 }

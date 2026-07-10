@@ -2,10 +2,16 @@ document.addEventListener("DOMContentLoaded", function() {
     // 1. LOGIKA TEMA 
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
+        // Inisialisasi teks tombol berdasarkan tema saat ini
+        let currentTheme = document.documentElement.getAttribute('data-theme');
+        themeToggle.innerText = currentTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
+
         themeToggle.addEventListener('click', () => {
-            let currentTheme = document.documentElement.getAttribute('data-theme');
+            currentTheme = document.documentElement.getAttribute('data-theme');
             let targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('theme', targetTheme);
+            themeToggle.innerText = targetTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
         });
     }
 
