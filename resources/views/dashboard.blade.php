@@ -117,6 +117,21 @@
                             <span>Mata Uang: <strong id="countryCurrency">-</strong></span>
                         </div>
                         
+                        <div class="alert p-3 mb-3 d-flex align-items-center justify-content-between shadow-sm" style="background-color: var(--bg-main); color: var(--text-main); border: 1px solid gray;">
+                            <div>
+                                <h6 class="mb-1 fw-bold">Country Risk Score</h6>
+                                <div id="riskScoreLabel" class="badge bg-secondary text-white">Menunggu Data...</div>
+                            </div>
+                            <div class="text-end">
+                                <h2 id="riskScoreValue" class="mb-0 fw-bold" style="color: var(--accent-color);">-</h2>
+                                <small class="text-muted">/100</small>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button class="btn fw-bold text-white" style="background-color: #0b4b7c; border:none;" data-bs-toggle="modal" data-bs-target="#compareModal">⚖️ Compare with another Country</button>
+                        </div>
+                        
                         <hr style="border-color: gray;">
                         <h6 class="text-info">📊 Indikator Makro Ekonomi</h6>
                         <div class="row text-center text-sm" style="font-size: 0.85rem;">
@@ -186,7 +201,77 @@
                 </div>
             </div>
 
-        </div> </div> </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </div> </div> </div> 
+
+<!-- Modal Compare -->
+<div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="background-color: var(--bg-panel); color: var(--text-main);">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white" id="compareModalLabel">⚖️ Country Comparison Engine</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light text-dark text-center" style="border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+        <div class="row mb-3">
+            <div class="col-6">
+                <select id="compareCountry1" class="form-select form-select-lg mb-2 shadow-sm border-secondary">
+                    <option value="">Select Country 1</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <select id="compareCountry2" class="form-select form-select-lg mb-2 shadow-sm border-secondary">
+                    <option value="">Select Country 2</option>
+                </select>
+            </div>
+        </div>
+        <div class="d-grid mb-4">
+            <button id="btnCompare" class="btn btn-lg text-white fw-bold shadow" style="background-color: var(--accent-color); border:none;">Compare Now</button>
+        </div>
+
+        <div class="table-responsive d-none" id="compareResultWrapper">
+            <table class="table table-hover table-bordered align-middle shadow-sm">
+                <thead style="background-color: #0b4b7c; color: white;">
+                    <tr>
+                        <th width="33%">Parameter</th>
+                        <th width="33%" id="thCountry1">-</th>
+                        <th width="33%" id="thCountry2">-</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-bold bg-light">Risk Score</td>
+                        <td id="tdRisk1" class="fw-bold fs-5">-</td>
+                        <td id="tdRisk2" class="fw-bold fs-5">-</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold bg-light">GDP (Billion USD)</td>
+                        <td id="tdGdp1">-</td>
+                        <td id="tdGdp2">-</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold bg-light">Inflation</td>
+                        <td id="tdInf1">-</td>
+                        <td id="tdInf2">-</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold bg-light">Weather (Code)</td>
+                        <td id="tdWea1">-</td>
+                        <td id="tdWea2">-</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold bg-light">Export (% GDP)</td>
+                        <td id="tdExp1">-</td>
+                        <td id="tdExp2">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('js/dashboard.js') }}"></script>
