@@ -95,12 +95,17 @@
                     
                     <div class="dropdown">
                         <a href="#" class="d-block text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=74BCC4&color=fff" alt="Profile" class="profile-avatar">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'User') }}&background=74BCC4&color=fff" alt="Profile" class="profile-avatar">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow" style="background-color: var(--bg-panel); border-color: gray;">
                             <li><a class="dropdown-item text-white" href="#">Settings</a></li>
                             <li><hr class="dropdown-divider bg-secondary"></li>
-                            <li><a class="dropdown-item text-warning" href="#">Sign out</a></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-warning">Sign out</button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>
