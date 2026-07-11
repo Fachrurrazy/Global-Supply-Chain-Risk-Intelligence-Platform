@@ -14,8 +14,8 @@ class AdminController extends Controller
         $usersCount = User::count();
         $cargoCount = Cargo::count();
         $portsCount = Port::count();
-        // We will fetch other stats later (articles)
+        $articlesCount = \App\Models\Article::count();
         
-        return view('admin.dashboard', compact('usersCount', 'cargoCount', 'portsCount'));
+        return view('admin.dashboard', compact('usersCount', 'cargoCount', 'portsCount', 'articlesCount'));
     }
 }

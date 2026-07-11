@@ -44,4 +44,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Port Management
     Route::get('/ports', [\App\Http\Controllers\Admin\PortController::class, 'index'])->name('ports.index');
     Route::post('/ports', [\App\Http\Controllers\Admin\PortController::class, 'store'])->name('ports.store');
+
+    // Article / News Management
+    Route::get('/articles', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('articles.index');
+    Route::delete('/articles/{id}', [\App\Http\Controllers\Admin\ArticleController::class, 'destroy'])->name('articles.destroy');
 });

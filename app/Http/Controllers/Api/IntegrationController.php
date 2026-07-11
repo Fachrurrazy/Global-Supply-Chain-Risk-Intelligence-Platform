@@ -114,17 +114,21 @@ class IntegrationController extends Controller
                     
                     if ($res->successful() && isset($res->json()['articles'])) {
                         $articles = $res->json()['articles'];
-                        $negativeWords = ['crisis', 'shortage', 'disrupt', 'delay', 'conflict', 'strike', 'war', 'risk', 'problem', 'crash', 'fail'];
+                        $positiveWords = \Illuminate\Support\Facades\DB::table('positive_words')->pluck('word')->toArray();
+                        $negativeWords = \Illuminate\Support\Facades\DB::table('negative_words')->pluck('word')->toArray();
+                        
+                        $positiveCount = 0;
                         $negativeCount = 0;
                         foreach ($articles as $article) {
                             $text = strtolower(($article['title'] ?? '') . ' ' . ($article['description'] ?? ''));
-                            foreach ($negativeWords as $word) {
-                                if (strpos($text, $word) !== false) {
-                                    $negativeCount++;
-                                }
+                            $words = str_word_count($text, 1);
+                            foreach ($words as $word) {
+                                if (in_array($word, $positiveWords)) $positiveCount++;
+                                if (in_array($word, $negativeWords)) $negativeCount++;
                             }
                         }
-                        return min(25, 5 + ($negativeCount * 5));
+                        $calculatedRisk = 10 + ($negativeCount * 3) - ($positiveCount * 2);
+                        return max(0, min(25, $calculatedRisk));
                     }
                 } catch (\Exception $e) {}
                 
@@ -247,42 +251,134 @@ class IntegrationController extends Controller
         return response()->json(['status' => 'error', 'message' => 'Resi tidak ditemukan'], 404);
     }
 
-    // FITUR BARU: NEWS INTELLIGENCE MENGGUNAKAN GNEWS API
+    // FITUR BARU: NEWS INTELLIGENCE MENGGUNAKAN GNEWS API DAN DATABASE CACHING
    public function getNews()
     {
         try {
             $apiKey = '168ebfe5bb470b960325e786d1ed4ca9'; 
-            
-            // PERBAIKAN: Gunakan urlencode() agar spasi berubah menjadi %20 sehingga URL tidak error/ditolak server
             $query = urlencode('logistics OR supply chain');
             $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&max=6&apikey={$apiKey}";
             
-            // Tambahkan batas waktu 10 detik
             $res = Http::withoutVerifying()->timeout(10)->get($url);
 
             if ($res->successful() && isset($res->json()['articles'])) {
-                // Jika API GNews berhasil, kembalikan datanya
+                $articles = $res->json()['articles'];
+                $savedArticles = [];
+                
+                foreach ($articles as $news) {
+                    $desc = strtolower($news['description'] . ' ' . $news['title']);
+                    
+                    // Hitung Sentimen Otomatis dengan DB (Lexicon)
+                    $positiveWords = \Illuminate\Support\Facades\DB::table('positive_words')->pluck('word')->toArray();
+                    $negativeWords = \Illuminate\Support\Facades\DB::table('negative_words')->pluck('word')->toArray();
+
+                    $posCount = 0; $negCount = 0;
+                    foreach ($positiveWords as $word) { if (strpos($desc, strtolower($word)) !== false) $posCount++; }
+                    foreach ($negativeWords as $word) { if (strpos($desc, strtolower($word)) !== false) $negCount++; }
+
+                    $sentiment = 'Neutral';
+                    if ($posCount > $negCount) $sentiment = 'Positive';
+                    if ($negCount > $posCount) $sentiment = 'Negative';
+
+                    // Simpan ke database (UpdateOrCreate agar tidak duplikat)
+                    $articleModel = \App\Models\Article::updateOrCreate(
+                        ['url' => $news['url']], // kondisi pencarian
+                        [
+                            'title' => $news['title'],
+                            'content' => $news['description'],
+                            'sentiment' => $sentiment,
+                            'image' => $news['image'],
+                            'source_name' => $news['source']['name'] ?? 'GNews',
+                            'published_at' => date('Y-m-d H:i:s', strtotime($news['publishedAt']))
+                        ]
+                    );
+
+                    // Bentuk array untuk respon Frontend agar sesuai format
+                    $savedArticles[] = [
+                        'title' => $articleModel->title,
+                        'description' => $articleModel->content,
+                        'source' => ['name' => $articleModel->source_name],
+                        'url' => $articleModel->url,
+                        'image' => $articleModel->image,
+                        'publishedAt' => $articleModel->published_at,
+                        'sentiment' => $articleModel->sentiment
+                    ];
+                }
+
                 return response()->json([
                     'status' => 'success', 
-                    'data' => $res->json()['articles']
+                    'data' => $savedArticles
                 ]);
             } else {
                 throw new \Exception("Limit API GNews tercapai atau Response salah.");
             }
 
         } catch (\Exception $e) {
-            // SISTEM ANTI-BADAI: Pastikan tetap mereturn 'status' => 'success' dengan data buatan
-            $mockNews = [
-                ['title' => 'Global Supply Chain Disrupted by New Red Sea Crisis', 'description' => 'Major shipping companies reroute vessels around the Cape of Good Hope...', 'source' => ['name' => 'Logistics Weekly'], 'url' => '#', 'image' => 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=500&q=80', 'publishedAt' => '2026-07-06T10:00:00Z'],
-                ['title' => 'Freight Rates Surge as Container Shortage Hits Asia', 'description' => 'Exporters face severe delays as container availability hits an all-time low in major Chinese ports.', 'source' => ['name' => 'Trade News'], 'url' => '#', 'image' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&q=80', 'publishedAt' => '2026-07-05T14:30:00Z'],
-                ['title' => 'AI and Automation Revolutionizing Port Operations', 'description' => 'Automated cranes and predictive AI are slashing unloading times at the Port of Rotterdam.', 'source' => ['name' => 'Tech Economy'], 'url' => '#', 'image' => 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&q=80', 'publishedAt' => '2026-07-04T09:15:00Z']
-            ];
+            // FALLBACK: AMBIL DARI DATABASE (ARCHIVE) ALIH-ALIH MOCK DATA
+            $dbArticles = \App\Models\Article::orderBy('published_at', 'desc')->take(6)->get();
             
+            if ($dbArticles->count() > 0) {
+                $formattedArticles = $dbArticles->map(function($art) {
+                    return [
+                        'title' => $art->title,
+                        'description' => $art->content,
+                        'source' => ['name' => $art->source_name],
+                        'url' => $art->url,
+                        'image' => $art->image,
+                        'publishedAt' => $art->published_at,
+                        'sentiment' => $art->sentiment
+                    ];
+                });
+
+                return response()->json([
+                    'status' => 'success', 
+                    'data' => $formattedArticles, 
+                    'note' => 'using_database_cache'
+                ]);
+            }
+
+            // Jika Database masih kosong, kembalikan array kosong (mencegah error UI)
             return response()->json([
                 'status' => 'success', 
-                'data' => $mockNews, 
-                'note' => 'using_mock_data'
+                'data' => [], 
+                'note' => 'no_data_available'
             ]);
         }
+    }
+
+    public function getRisk()
+    {
+        $risks = \App\Models\RiskScore::orderBy('score', 'desc')->get();
+        return response()->json(['status' => 'success', 'data' => $risks]);
+    }
+
+    public function getWatchlists()
+    {
+        $user_id = auth()->id();
+        $watchlists = \App\Models\Watchlist::where('user_id', $user_id)->get();
+        return response()->json(['status' => 'success', 'data' => $watchlists]);
+    }
+
+    public function addWatchlist(Request $request)
+    {
+        $request->validate(['country_code' => 'required', 'country_name' => 'required']);
+        $user_id = auth()->id();
+        $exists = \App\Models\Watchlist::where('user_id', $user_id)->where('country_code', $request->country_code)->exists();
+        if (!$exists) {
+            \App\Models\Watchlist::create([
+                'user_id' => $user_id,
+                'country_code' => $request->country_code,
+                'country_name' => $request->country_name
+            ]);
+            return response()->json(['status' => 'success', 'message' => 'Added to watchlist']);
+        }
+        return response()->json(['status' => 'error', 'message' => 'Already in watchlist']);
+    }
+
+    public function removeWatchlist($code)
+    {
+        $user_id = auth()->id();
+        \App\Models\Watchlist::where('user_id', $user_id)->where('country_code', $code)->delete();
+        return response()->json(['status' => 'success', 'message' => 'Removed from watchlist']);
     }
 }

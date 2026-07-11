@@ -73,8 +73,8 @@
             <li class="{{ request()->routeIs('admin.ports.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.ports.index') }}"><i class="bi bi-geo-alt me-2"></i> Dataset Pelabuhan</a>
             </li>
-            <li>
-                <a href="#"><i class="bi bi-journal-text me-2"></i> Artikel Analisis</a>
+            <li class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.articles.index') }}"><i class="bi bi-journal-text me-2"></i> Artikel Analisis</a>
             </li>
             <li class="{{ request()->routeIs('admin.cargo.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.cargo.index') }}"><i class="bi bi-box-seam me-2"></i> Input Barang/Cargo</a>

@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Intelligence - Global Supply Chain</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root { --bg-main: #FFFFFF; --bg-panel: #F8F9FA; --text-main: #000000; --text-muted: #6c757d; --accent-color: #74BCC4; }
         [data-theme="dark"] { --bg-main: #000000; --bg-panel: #161b22; --text-main: #FFFFFF; --text-muted: #8b949e; --accent-color: #026902; }
@@ -117,13 +118,25 @@
                     let pubDate = new Date(article.publishedAt || Date.now());
                     let dateStr = pubDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
+                    let sentimentBadge = '';
+                    if (article.sentiment === 'Positive') {
+                        sentimentBadge = '<span class="badge bg-success ms-2"><i class="bi bi-emoji-smile"></i> Positif</span>';
+                    } else if (article.sentiment === 'Negative') {
+                        sentimentBadge = '<span class="badge bg-danger ms-2"><i class="bi bi-emoji-frown"></i> Negatif</span>';
+                    } else if (article.sentiment === 'Neutral') {
+                        sentimentBadge = '<span class="badge bg-warning text-dark ms-2"><i class="bi bi-emoji-neutral"></i> Netral</span>';
+                    }
+
                     container.innerHTML += `
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card news-card shadow-sm d-flex flex-column h-100" style="background-color: var(--bg-panel); border: 1px solid rgba(128,128,128,0.2);">
                                 <img src="${img}" class="card-img-top news-img" alt="News" style="height:200px; object-fit:cover;">
                                 <div class="card-body d-flex flex-column p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="badge bg-info text-dark fw-bold px-3 py-2">${article.source.name}</span>
+                                        <div>
+                                            <span class="badge bg-info text-dark fw-bold px-3 py-2">${article.source.name}</span>
+                                            ${sentimentBadge}
+                                        </div>
                                         <small class="text-muted fw-bold">${dateStr}</small>
                                     </div>
                                     <h5 class="card-title fw-bold" style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${article.title}</h5>

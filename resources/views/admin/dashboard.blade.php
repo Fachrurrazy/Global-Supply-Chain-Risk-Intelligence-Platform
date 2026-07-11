@@ -65,7 +65,7 @@
     <div class="col-md-3">
         <div class="stat-card articles">
             <div class="stat-content">
-                <h3>--</h3>
+                <h3>{{ $articlesCount ?? 0 }}</h3>
                 <p>Articles</p>
             </div>
             <div class="stat-icon">

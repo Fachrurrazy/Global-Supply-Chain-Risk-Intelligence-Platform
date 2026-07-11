@@ -15,3 +15,11 @@ Route::get('/ports', [\App\Http\Controllers\Api\IntegrationController::class, 'g
 Route::get('/track-cargo/{resi}', [\App\Http\Controllers\Api\IntegrationController::class, 'trackCargo']);
 // news
 Route::get('/news', [\App\Http\Controllers\Api\IntegrationController::class, 'getNews']);
+
+// risk
+Route::get('/risk', [\App\Http\Controllers\Api\IntegrationController::class, 'getRisk']);
+
+// watchlist
+Route::get('/watchlist', [\App\Http\Controllers\Api\IntegrationController::class, 'getWatchlists']);
+Route::post('/watchlist', [\App\Http\Controllers\Api\IntegrationController::class, 'addWatchlist']);
+Route::delete('/watchlist/{code}', [\App\Http\Controllers\Api\IntegrationController::class, 'removeWatchlist']);

@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", function() {
             maxZoom: 18
         }).addTo(map);
 
+        window.appMap = map;
+        window.appMarkers = {};
+
         const weatherStatus = document.getElementById('weatherStatus');
 
         // 3. Fetch Data Negara
@@ -58,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                         let marker = L.marker([country.lat, country.lng], {icon: customIcon}).addTo(map);
                         marker.bindTooltip(`<b>${country.name}</b>`);
+                        window.appMarkers[country.code] = marker;
                         
                         marker.on('click', function() {
                             // Update Info Dasar
@@ -111,6 +115,10 @@ document.addEventListener("DOMContentLoaded", function() {
                                             const rLabel = document.getElementById('riskScoreLabel');
                                             rLabel.innerText = risk.label;
                                             rLabel.className = `badge ${labelClass} text-white`;
+                                        }
+
+                                        if (window.updateWatchlistButton) {
+                                            window.updateWatchlistButton(country.code);
                                         }
 
                                         // --- D. RENDER GRAFIK CHART.JS ---
@@ -357,4 +365,98 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     }
+
+    // ==========================================
+    // 6. WATCHLIST LOGIC
+    // ==========================================
+    window.watchlists = []; // global store
+
+    function fetchWatchlists() {
+        fetch('/api/watchlist')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.watchlists = data.data;
+                    renderWatchlists();
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    function renderWatchlists() {
+        const container = document.getElementById('watchlistContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        if (window.watchlists.length === 0) {
+            container.innerHTML = '<small class="px-3 text-muted">Belum ada negara yang dipantau.</small>';
+            return;
+        }
+        window.watchlists.forEach(w => {
+            container.innerHTML += `
+                <a href="#" onclick="focusCountry('${w.country_code}')" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="padding-left: 25px;">
+                    <span>${w.country_name} (${w.country_code})</span>
+                    <button class="btn btn-sm btn-outline-danger px-2 py-0" onclick="event.stopPropagation(); removeFromWatchlist('${w.country_code}')">x</button>
+                </a>
+            `;
+        });
+    }
+
+    window.toggleWatchlist = function() {
+        const code = document.getElementById('countryCode').innerText;
+        const name = document.getElementById('countryName').innerText;
+        if (!code || code === '-') return;
+
+        const isWatched = window.watchlists.find(w => w.country_code === code);
+        
+        if (isWatched) {
+            removeFromWatchlist(code);
+        } else {
+            fetch('/api/watchlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
+                body: JSON.stringify({ country_code: code, country_name: name })
+            }).then(res => res.json()).then(data => {
+                if (data.status === 'success') {
+                    fetchWatchlists();
+                    updateWatchlistButton(code);
+                }
+            });
+        }
+    }
+
+    window.removeFromWatchlist = function(code) {
+        fetch(`/api/watchlist/${code}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' }
+        }).then(res => res.json()).then(data => {
+            if (data.status === 'success') {
+                fetchWatchlists();
+                updateWatchlistButton(document.getElementById('countryCode').innerText);
+            }
+        });
+    }
+
+    window.updateWatchlistButton = function(code) {
+        const btn = document.getElementById('btnWatchlist');
+        if (!btn) return;
+        btn.classList.remove('d-none');
+        const isWatched = window.watchlists.find(w => w.country_code === code);
+        if (isWatched) {
+            btn.innerHTML = '⭐ Remove Watchlist';
+            btn.className = 'btn btn-sm btn-warning';
+        } else {
+            btn.innerHTML = '⭐ Add to Watchlist';
+            btn.className = 'btn btn-sm btn-outline-warning';
+        }
+    }
+
+    window.focusCountry = function(code) {
+        if (window.appMarkers && window.appMarkers[code] && window.appMap) {
+            window.appMap.setView(window.appMarkers[code].getLatLng(), 4);
+            window.appMarkers[code].fire('click');
+        }
+    }
+
+    // Call initially
+    fetchWatchlists();
 });

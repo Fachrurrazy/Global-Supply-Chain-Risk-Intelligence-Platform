@@ -77,9 +77,13 @@
             <a href="/monitoring" class="list-group-item list-group-item-action">⚓ Monitoring</a>
             <a href="/news" class="list-group-item list-group-item-action">📰 News Intelligence</a>
             <a href="#" class="list-group-item list-group-item-action">📦 Inventory</a>
-            <a href="#" class="list-group-item list-group-item-action">👥 Customers</a>
-            <a href="#" class="list-group-item list-group-item-action">🛒 Products</a>
-            <a href="/about" class="list-group-item list-group-item-action mt-4 border-top border-secondary">ℹ️ About System</a>
+            
+            <div class="mt-4 px-3 mb-2 text-white fw-bold" style="font-size: 0.9rem;">⭐ WATCHLISTS</div>
+            <div id="watchlistContainer" class="mb-2">
+                <small class="px-3 text-muted">Memuat watchlist...</small>
+            </div>
+
+            <a href="/about" class="list-group-item list-group-item-action mt-auto border-top border-secondary">ℹ️ About System</a>
         </div>
     </div>
 
@@ -121,7 +125,10 @@
 
                 <div class="col-lg-4">
                     <div class="dashboard-panel mb-3">
-                        <h4 id="countryName" class="text-warning">Pilih Negara...</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 id="countryName" class="text-warning mb-0">Pilih Negara...</h4>
+                            <button id="btnWatchlist" class="btn btn-sm btn-outline-warning d-none" onclick="toggleWatchlist()">⭐ Add to Watchlist</button>
+                        </div>
                         <div class="d-flex justify-content-between text-sm mb-3">
                             <span>Kode: <strong id="countryCode">-</strong></span>
                             <span>Region: <strong id="countryRegion">-</strong></span>
