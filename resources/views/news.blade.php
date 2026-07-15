@@ -50,9 +50,6 @@
             <a href="/" class="list-group-item list-group-item-action {{ Request::is('dashboard') || Request::is('/') ? 'active' : '' }}">📊 Overview</a>
             <a href="/monitoring" class="list-group-item list-group-item-action {{ Request::is('monitoring') ? 'active' : '' }}">⚓ Monitoring</a>
             <a href="/news" class="list-group-item list-group-item-action {{ Request::is('news') ? 'active' : '' }}">📰 News Intelligence</a>
-            <a href="#" class="list-group-item list-group-item-action">📦 Inventory</a>
-            <a href="#" class="list-group-item list-group-item-action">👥 Customers</a>
-            <a href="#" class="list-group-item list-group-item-action">🛒 Products</a>
             <a href="/about" class="list-group-item list-group-item-action mt-4 border-top border-secondary {{ Request::is('about') ? 'active' : '' }}">ℹ️ About System</a>
         </div>
     </div>

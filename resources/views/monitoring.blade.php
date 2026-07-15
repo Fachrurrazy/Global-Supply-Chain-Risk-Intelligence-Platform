@@ -93,9 +93,6 @@
             <a href="/" class="list-group-item list-group-item-action">📊 Overview</a>
             <a href="/monitoring" class="list-group-item list-group-item-action active">⚓ Monitoring</a>
             <a href="/news" class="list-group-item list-group-item-action">📰 News Intelligence</a>
-            <a href="#" class="list-group-item list-group-item-action">📦 Inventory</a>
-            <a href="#" class="list-group-item list-group-item-action">👥 Customers</a>
-            <a href="#" class="list-group-item list-group-item-action">🛒 Products</a>
             <a href="/about" class="list-group-item list-group-item-action mt-4 border-top border-secondary">ℹ️ About System</a>
         </div>
     </div>

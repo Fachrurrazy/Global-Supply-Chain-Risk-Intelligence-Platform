@@ -76,7 +76,7 @@
             <a href="/dashboard" class="list-group-item list-group-item-action active">📊 Overview</a>
             <a href="/monitoring" class="list-group-item list-group-item-action">⚓ Monitoring</a>
             <a href="/news" class="list-group-item list-group-item-action">📰 News Intelligence</a>
-            <a href="#" class="list-group-item list-group-item-action">📦 Inventory</a>
+            
             
             <div class="mt-4 px-3 mb-2 text-white fw-bold" style="font-size: 0.9rem;">⭐ WATCHLISTS</div>
             <div id="watchlistContainer" class="mb-2">
