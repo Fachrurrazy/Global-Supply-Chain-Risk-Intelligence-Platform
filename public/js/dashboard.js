@@ -457,6 +457,74 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // ==========================================
+    // 7. COUNTRY NEWS MODAL LOGIC
+    // ==========================================
+    const countryNewsModal = document.getElementById('countryNewsModal');
+    if (countryNewsModal) {
+        countryNewsModal.addEventListener('show.bs.modal', function () {
+            const countryName = document.getElementById('countryName').innerText;
+            const modalTitleSpan = document.getElementById('newsModalCountryName');
+            const newsContainer = document.getElementById('countryNewsContainer');
+            
+            if (!countryName || countryName === 'Pilih Negara...') {
+                modalTitleSpan.innerText = '-';
+                newsContainer.innerHTML = `<div class="text-center py-4 text-muted"><p>Silakan pilih negara di peta terlebih dahulu!</p></div>`;
+                return;
+            }
+
+            modalTitleSpan.innerText = countryName;
+            newsContainer.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-info" role="status"></div>
+                    <p class="mt-2 text-muted">Menarik histori berita untuk ${countryName}...</p>
+                </div>
+            `;
+
+            fetch(`/api/country-news/${encodeURIComponent(countryName)}`)
+                .then(res => res.json())
+                .then(data => {
+                    newsContainer.innerHTML = '';
+                    if (data.status === 'success' && data.data && data.data.length > 0) {
+                        data.data.forEach(article => {
+                            let img = article.image || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80';
+                            let pubDate = new Date(article.publishedAt || Date.now());
+                            let dateStr = pubDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                            
+                            newsContainer.innerHTML += `
+                                <div class="card mb-3 shadow-sm" style="border: 1px solid rgba(0,0,0,0.1);">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="${img}" class="img-fluid rounded-start h-100" style="object-fit:cover;" alt="News Image">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <small class="text-muted fw-bold d-block mb-1">${article.source.name} • ${dateStr}</small>
+                                                <h5 class="card-title fw-bold" style="font-size: 1.1rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${article.title}</h5>
+                                                <p class="card-text text-muted mb-2" style="font-size: 0.9rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${article.description}</p>
+                                                <a href="${article.url}" target="_blank" class="btn btn-sm btn-outline-info fw-bold">Baca Selengkapnya ↗</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        newsContainer.innerHTML = `
+                            <div class="alert alert-warning text-center">
+                                <strong>Tidak ada berita terkini untuk ${countryName}.</strong><br>
+                                <small>Silakan coba negara lain, atau periksa kembali nanti.</small>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(err => {
+                    console.error("News Fetch Error:", err);
+                    newsContainer.innerHTML = `<div class="alert alert-danger text-center">Gagal terhubung ke server berita.</div>`;
+                });
+        });
+    }
+
     // Call initially
     fetchWatchlists();
 });

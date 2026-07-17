@@ -114,6 +114,10 @@ class IntegrationController extends Controller
                     
                     if ($res->successful() && isset($res->json()['articles'])) {
                         $articles = $res->json()['articles'];
+                        
+                        // SIMPAN ARTIKEL KE CACHE UNTUK FITUR POP-UP BERITA NEGARA (Tahan 1 Jam)
+                        Cache::put('news_articles_' . md5($countryName), $articles, 3600);
+
                         $positiveWords = \Illuminate\Support\Facades\DB::table('positive_words')->pluck('word')->toArray();
                         $negativeWords = \Illuminate\Support\Facades\DB::table('negative_words')->pluck('word')->toArray();
                         
@@ -252,26 +256,26 @@ class IntegrationController extends Controller
     }
 
     // FITUR BARU: NEWS INTELLIGENCE MENGGUNAKAN GNEWS API DAN DATABASE CACHING
-   public function getNews()
+    public function getNews(Request $request)
     {
+        // 1. Coba fetch dari GNews untuk update database (silently fail jika gagal/limit)
         try {
             $apiKey = '168ebfe5bb470b960325e786d1ed4ca9'; 
             $query = urlencode('logistics OR supply chain');
+            // Tetap fetch 6 terbaru untuk hemat kuota API
             $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&max=6&apikey={$apiKey}";
             
-            $res = Http::withoutVerifying()->timeout(10)->get($url);
+            $res = Http::withoutVerifying()->timeout(5)->get($url);
 
             if ($res->successful() && isset($res->json()['articles'])) {
                 $articles = $res->json()['articles'];
-                $savedArticles = [];
                 
+                $positiveWords = \Illuminate\Support\Facades\DB::table('positive_words')->pluck('word')->toArray();
+                $negativeWords = \Illuminate\Support\Facades\DB::table('negative_words')->pluck('word')->toArray();
+
                 foreach ($articles as $news) {
                     $desc = strtolower($news['description'] . ' ' . $news['title']);
                     
-                    // Hitung Sentimen Otomatis dengan DB (Lexicon)
-                    $positiveWords = \Illuminate\Support\Facades\DB::table('positive_words')->pluck('word')->toArray();
-                    $negativeWords = \Illuminate\Support\Facades\DB::table('negative_words')->pluck('word')->toArray();
-
                     $posCount = 0; $negCount = 0;
                     foreach ($positiveWords as $word) { if (strpos($desc, strtolower($word)) !== false) $posCount++; }
                     foreach ($negativeWords as $word) { if (strpos($desc, strtolower($word)) !== false) $negCount++; }
@@ -280,9 +284,8 @@ class IntegrationController extends Controller
                     if ($posCount > $negCount) $sentiment = 'Positive';
                     if ($negCount > $posCount) $sentiment = 'Negative';
 
-                    // Simpan ke database (UpdateOrCreate agar tidak duplikat)
-                    $articleModel = \App\Models\Article::updateOrCreate(
-                        ['url' => $news['url']], // kondisi pencarian
+                    \App\Models\Article::updateOrCreate(
+                        ['url' => $news['url']],
                         [
                             'title' => $news['title'],
                             'content' => $news['description'],
@@ -292,58 +295,36 @@ class IntegrationController extends Controller
                             'published_at' => date('Y-m-d H:i:s', strtotime($news['publishedAt']))
                         ]
                     );
-
-                    // Bentuk array untuk respon Frontend agar sesuai format
-                    $savedArticles[] = [
-                        'title' => $articleModel->title,
-                        'description' => $articleModel->content,
-                        'source' => ['name' => $articleModel->source_name],
-                        'url' => $articleModel->url,
-                        'image' => $articleModel->image,
-                        'publishedAt' => $articleModel->published_at,
-                        'sentiment' => $articleModel->sentiment
-                    ];
                 }
-
-                return response()->json([
-                    'status' => 'success', 
-                    'data' => $savedArticles
-                ]);
-            } else {
-                throw new \Exception("Limit API GNews tercapai atau Response salah.");
             }
-
         } catch (\Exception $e) {
-            // FALLBACK: AMBIL DARI DATABASE (ARCHIVE) ALIH-ALIH MOCK DATA
-            $dbArticles = \App\Models\Article::orderBy('published_at', 'desc')->take(6)->get();
-            
-            if ($dbArticles->count() > 0) {
-                $formattedArticles = $dbArticles->map(function($art) {
-                    return [
-                        'title' => $art->title,
-                        'description' => $art->content,
-                        'source' => ['name' => $art->source_name],
-                        'url' => $art->url,
-                        'image' => $art->image,
-                        'publishedAt' => $art->published_at,
-                        'sentiment' => $art->sentiment
-                    ];
-                });
-
-                return response()->json([
-                    'status' => 'success', 
-                    'data' => $formattedArticles, 
-                    'note' => 'using_database_cache'
-                ]);
-            }
-
-            // Jika Database masih kosong, kembalikan array kosong (mencegah error UI)
-            return response()->json([
-                'status' => 'success', 
-                'data' => [], 
-                'note' => 'no_data_available'
-            ]);
+            // Abaikan error API, kita akan tetap menampilkan data dari database
         }
+
+        // 2. Selalu kembalikan data dari database menggunakan Pagination (9 per halaman)
+        $dbArticles = \App\Models\Article::orderBy('published_at', 'desc')->paginate(9);
+        
+        $formattedArticles = $dbArticles->getCollection()->map(function($art) {
+            return [
+                'title' => $art->title,
+                'description' => $art->content,
+                'source' => ['name' => $art->source_name],
+                'url' => $art->url,
+                'image' => $art->image,
+                'publishedAt' => $art->published_at,
+                'sentiment' => $art->sentiment
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success', 
+            'data' => $formattedArticles,
+            'pagination' => [
+                'current_page' => $dbArticles->currentPage(),
+                'last_page' => $dbArticles->lastPage(),
+                'has_more_pages' => $dbArticles->hasMorePages()
+            ]
+        ]);
     }
 
     public function getRisk()
@@ -380,5 +361,16 @@ class IntegrationController extends Controller
         $user_id = auth()->id();
         \App\Models\Watchlist::where('user_id', $user_id)->where('country_code', $code)->delete();
         return response()->json(['status' => 'success', 'message' => 'Removed from watchlist']);
+    }
+
+    public function getCountryNews($countryName)
+    {
+        // Ambil dari cache yang sudah diisi saat kalkulasi Risk Score (agar tidak double request API)
+        $articles = Cache::get('news_articles_' . md5($countryName), []);
+        
+        return response()->json([
+            'status' => 'success', 
+            'data' => $articles
+        ]);
     }
 }

@@ -15,6 +15,7 @@ Route::get('/ports', [\App\Http\Controllers\Api\IntegrationController::class, 'g
 Route::get('/track-cargo/{resi}', [\App\Http\Controllers\Api\IntegrationController::class, 'trackCargo']);
 // news
 Route::get('/news', [\App\Http\Controllers\Api\IntegrationController::class, 'getNews']);
+Route::get('/country-news/{countryName}', [\App\Http\Controllers\Api\IntegrationController::class, 'getCountryNews']);
 
 // risk
 Route::get('/risk', [\App\Http\Controllers\Api\IntegrationController::class, 'getRisk']);

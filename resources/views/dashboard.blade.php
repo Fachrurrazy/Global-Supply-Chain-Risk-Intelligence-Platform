@@ -147,7 +147,8 @@
                         </div>
 
                         <div class="d-grid mb-3">
-                            <button class="btn fw-bold text-white" style="background-color: #0b4b7c; border:none;" data-bs-toggle="modal" data-bs-target="#compareModal">⚖️ Compare with another Country</button>
+                            <button class="btn fw-bold text-white mb-2" style="background-color: #0b4b7c; border:none;" data-bs-toggle="modal" data-bs-target="#compareModal">⚖️ Compare with another Country</button>
+                            <button class="btn fw-bold text-white" style="background-color: var(--accent-color); border:none;" data-bs-toggle="modal" data-bs-target="#countryNewsModal">📰 Lihat Berita Negara Ini</button>
                         </div>
                         
                         <hr style="border-color: gray;">
@@ -220,6 +221,23 @@
             </div>
 
         </div> </div> </div> 
+
+<!-- Modal Country News -->
+<div class="modal fade" id="countryNewsModal" tabindex="-1" aria-labelledby="countryNewsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content" style="background-color: var(--bg-panel); color: var(--text-main);">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white" id="countryNewsModalLabel">📰 Berita Terkini: <span id="newsModalCountryName">-</span></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light text-dark p-4" id="countryNewsContainer">
+        <div class="text-center py-4 text-muted">
+            <p>Silakan pilih negara di peta terlebih dahulu...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Compare -->
 <div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareModalLabel" aria-hidden="true">
@@ -297,7 +315,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{{ asset('js/dashboard.js') }}"></script>
+<script src="{{ asset('js/dashboard.js') }}?v={{ time() }}"></script>
 
 </body>
 </html>

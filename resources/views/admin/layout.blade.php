@@ -67,8 +67,8 @@
             <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <a href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
             </li>
-            <li>
-                <a href="#"><i class="bi bi-people me-2"></i> Kelola User</a>
+            <li class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.users.index') }}"><i class="bi bi-people me-2"></i> Kelola User</a>
             </li>
             <li class="{{ request()->routeIs('admin.ports.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.ports.index') }}"><i class="bi bi-geo-alt me-2"></i> Dataset Pelabuhan</a>

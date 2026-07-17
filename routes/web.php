@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
+    // User Management
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    
     // Cargo Management
     Route::get('/cargo', [\App\Http\Controllers\Admin\CargoController::class, 'index'])->name('cargo.index');
     Route::post('/cargo', [\App\Http\Controllers\Admin\CargoController::class, 'store'])->name('cargo.store');
