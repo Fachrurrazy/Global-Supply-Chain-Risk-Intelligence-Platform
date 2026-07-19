@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cyber-logistic-app
+    container_name: cyber-logistic-app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=global_supply_chain
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - cyber-network
+
+  db:
+    image: mysql:8.0
+    container_name: cyber-logistic-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: global_supply_chain
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - cyber-network
+
+networks:
+  cyber-network:
+    driver: bridge
+
+volumes:
+  db-data:
