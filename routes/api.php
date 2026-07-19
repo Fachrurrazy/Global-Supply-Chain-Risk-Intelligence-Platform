@@ -10,6 +10,7 @@ Route::get('/countries/{code}', [CountryController::class, 'show']);
 // 2. Data Detail: Mengambil data eksternal (Cuaca, GDP, Berita) saat negara diklik
 Route::get('/country-data/{code}', [IntegrationController::class, 'getCountryDetail']);
 Route::get('/exchange-rates', [IntegrationController::class, 'getExchangeRates']);
+Route::get('/currency', [IntegrationController::class, 'getExchangeRates']); // Added for spec compliance
 // Route untuk Halaman Monitoring
 Route::get('/ports', [\App\Http\Controllers\Api\IntegrationController::class, 'getPorts']);
 Route::get('/track-cargo/{resi}', [\App\Http\Controllers\Api\IntegrationController::class, 'trackCargo']);

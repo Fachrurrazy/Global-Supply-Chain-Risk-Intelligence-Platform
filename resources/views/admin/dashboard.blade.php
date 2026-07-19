@@ -3,84 +3,80 @@
 @section('title', 'Dashboard')
 @section('page_title', 'Dashboard Overview')
 
-@section('styles')
-<style>
-    .stat-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-left: 5px solid #3498db;
-    }
-    .stat-card.users { border-color: #9b59b6; }
-    .stat-card.ports { border-color: #2ecc71; }
-    .stat-card.articles { border-color: #e74c3c; }
-    .stat-card.cargo { border-color: #f1c40f; }
-    
-    .stat-icon {
-        font-size: 2.5rem;
-        color: #cbd5e1;
-    }
-    .stat-content h3 {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #2c3e50;
-    }
-    .stat-content p {
-        margin: 0;
-        color: #7f8c8d;
-        font-weight: 600;
-    }
-</style>
-@endsection
-
 @section('content')
 <div class="row g-4">
-    <div class="col-md-3">
-        <div class="stat-card users">
-            <div class="stat-content">
-                <h3>{{ $usersCount ?? 0 }}</h3>
-                <p>Total Users</p>
-            </div>
-            <div class="stat-icon">
-                <i class="bi bi-people-fill"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card ports">
-            <div class="stat-content">
-                <h3>{{ $portsCount ?? 0 }}</h3>
-                <p>Ports</p>
-            </div>
-            <div class="stat-icon">
-                <i class="bi bi-geo-alt-fill"></i>
+    <div class="col-md-6 col-lg-3">
+        <div class="cyber-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clh-text-muted); margin-bottom: 4px;">Total Users</div>
+                        <div style="font-family: var(--clh-font-mono); font-size: 2rem; font-weight: 800; color: var(--clh-text-primary);">{{ $usersCount ?? 0 }}</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; border-radius: var(--clh-radius-md); background: rgba(168, 85, 247, 0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-people-fill" style="font-size: 1.3rem; color: #A855F7;"></i>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; height: 3px; border-radius: 2px; background: var(--clh-bg-input); overflow: hidden;">
+                    <div style="height: 100%; width: 65%; background: linear-gradient(90deg, #A855F7, #6366F1); border-radius: 2px;"></div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card articles">
-            <div class="stat-content">
-                <h3>{{ $articlesCount ?? 0 }}</h3>
-                <p>Articles</p>
-            </div>
-            <div class="stat-icon">
-                <i class="bi bi-journal-text"></i>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="cyber-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clh-text-muted); margin-bottom: 4px;">Ports</div>
+                        <div style="font-family: var(--clh-font-mono); font-size: 2rem; font-weight: 800; color: var(--clh-text-primary);">{{ $portsCount ?? 0 }}</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; border-radius: var(--clh-radius-md); background: rgba(52, 211, 153, 0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-geo-alt-fill" style="font-size: 1.3rem; color: var(--clh-positive);"></i>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; height: 3px; border-radius: 2px; background: var(--clh-bg-input); overflow: hidden;">
+                    <div style="height: 100%; width: 80%; background: linear-gradient(90deg, #34D399, #00E5FF); border-radius: 2px;"></div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card cargo">
-            <div class="stat-content">
-                <h3>{{ $cargoCount ?? 0 }}</h3>
-                <p>Cargo Entries</p>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="cyber-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clh-text-muted); margin-bottom: 4px;">Articles</div>
+                        <div style="font-family: var(--clh-font-mono); font-size: 2rem; font-weight: 800; color: var(--clh-text-primary);">{{ $articlesCount ?? 0 }}</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; border-radius: var(--clh-radius-md); background: rgba(248, 113, 113, 0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-journal-text" style="font-size: 1.3rem; color: var(--clh-negative);"></i>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; height: 3px; border-radius: 2px; background: var(--clh-bg-input); overflow: hidden;">
+                    <div style="height: 100%; width: 45%; background: linear-gradient(90deg, #F87171, #FBBF24); border-radius: 2px;"></div>
+                </div>
             </div>
-            <div class="stat-icon">
-                <i class="bi bi-box-seam-fill"></i>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="cyber-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clh-text-muted); margin-bottom: 4px;">Cargo Entries</div>
+                        <div style="font-family: var(--clh-font-mono); font-size: 2rem; font-weight: 800; color: var(--clh-text-primary);">{{ $cargoCount ?? 0 }}</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; border-radius: var(--clh-radius-md); background: rgba(251, 191, 36, 0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-box-seam-fill" style="font-size: 1.3rem; color: var(--clh-warning);"></i>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; height: 3px; border-radius: 2px; background: var(--clh-bg-input); overflow: hidden;">
+                    <div style="height: 100%; width: 55%; background: linear-gradient(90deg, #FBBF24, #00E5FF); border-radius: 2px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -88,12 +84,13 @@
 
 <div class="row mt-4">
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 fw-bold">Recent Activity</h5>
+        <div class="cyber-card">
+            <div class="card-header">
+                <h5><i class="bi bi-activity me-2" style="color: var(--clh-accent);"></i>Recent Activity</h5>
             </div>
-            <div class="card-body">
-                <p class="text-muted">No recent activity found. Implement the specific management pages to see activities here.</p>
+            <div class="card-body text-center py-5">
+                <i class="bi bi-clock-history" style="font-size: 2.5rem; color: var(--clh-text-muted); opacity: 0.3;"></i>
+                <p class="mt-2" style="color: var(--clh-text-muted); font-size: 0.85rem;">No recent activity found. Manage your platform data using the sidebar menus.</p>
             </div>
         </div>
     </div>

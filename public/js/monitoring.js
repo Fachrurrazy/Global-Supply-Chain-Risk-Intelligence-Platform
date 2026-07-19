@@ -1,19 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. LOGIKA TEMA 
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        // Inisialisasi teks tombol berdasarkan tema saat ini
-        let currentTheme = document.documentElement.getAttribute('data-theme');
-        themeToggle.innerText = currentTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
+    // Tema ditangani di inline script monitoring.blade.php
 
-        themeToggle.addEventListener('click', () => {
-            currentTheme = document.documentElement.getAttribute('data-theme');
-            let targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', targetTheme);
-            localStorage.setItem('theme', targetTheme);
-            themeToggle.innerText = targetTheme === 'dark' ? 'Beralih Mode Terang' : 'Beralih Mode Gelap';
-        });
-    }
 
     // 2. LOGIKA PETA PELABUHAN (DINAMIS DARI MYSQL)
     const mapElement = document.getElementById('map-ports');

@@ -6,19 +6,19 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold">Monitoring Berita Otomatis</h5>
-                <span class="badge bg-primary">Otomatis dari GNews</span>
+        <div class="cyber-card">
+            <div class="card-header">
+                <h5><i class="bi bi-journal-text me-2" style="color: var(--clh-accent);"></i>Monitoring Berita Otomatis</h5>
+                <span class="cyber-badge primary">Otomatis dari GNews</span>
             </div>
             <div class="card-body">
-                <p class="text-muted mb-4">
-                    Tabel ini menampilkan daftar artikel berita yang diambil secara otomatis oleh sistem saat modul <strong>News Intelligence</strong> diakses. Sistem Lexicon AI kita juga langsung memberikan skor sentimen pada setiap berita yang masuk.
+                <p style="color: var(--clh-text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                    Tabel ini menampilkan daftar artikel berita yang diambil secara otomatis oleh sistem saat modul <strong style="color: var(--clh-accent);">News Intelligence</strong> diakses. Sistem Lexicon AI kita juga langsung memberikan skor sentimen pada setiap berita yang masuk.
                 </p>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
+                    <table class="cyber-table">
+                        <thead>
                             <tr>
                                 <th>Tanggal</th>
                                 <th>Sumber</th>
@@ -30,47 +30,49 @@
                         <tbody>
                             @forelse($articles as $article)
                             <tr>
-                                <td>
+                                <td style="font-family: var(--clh-font-mono); font-size: 0.78rem; white-space: nowrap;">
                                     @if($article->published_at)
                                         {{ \Carbon\Carbon::parse($article->published_at)->format('d M Y H:i') }}
                                     @else
                                         {{ $article->created_at->format('d M Y') }}
                                     @endif
                                 </td>
-                                <td><span class="badge bg-secondary">{{ $article->source_name ?? 'Internal' }}</span></td>
-                                <td>
-                                    <a href="{{ $article->url }}" target="_blank" class="text-decoration-none fw-semibold">
+                                <td><span class="cyber-badge secondary">{{ $article->source_name ?? 'Internal' }}</span></td>
+                                <td style="font-family: var(--clh-font-sans);">
+                                    <a href="{{ $article->url }}" target="_blank" style="text-decoration: none; color: var(--clh-accent); font-weight: 600; transition: all 0.2s;">
                                         {{ $article->title }}
                                     </a>
-                                    <div class="small text-muted text-truncate" style="max-width: 400px;">
+                                    <div style="font-size: 0.78rem; color: var(--clh-text-muted); max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 4px;">
                                         {{ $article->content }}
                                     </div>
                                 </td>
                                 <td>
                                     @if($article->sentiment == 'Positive')
-                                        <span class="badge bg-success"><i class="bi bi-emoji-smile"></i> Positif</span>
+                                        <span class="cyber-badge success"><i class="bi bi-arrow-up-circle me-1"></i>Positif</span>
                                     @elseif($article->sentiment == 'Negative')
-                                        <span class="badge bg-danger"><i class="bi bi-emoji-frown"></i> Negatif</span>
+                                        <span class="cyber-badge danger"><i class="bi bi-arrow-down-circle me-1"></i>Negatif</span>
                                     @else
-                                        <span class="badge bg-warning text-dark"><i class="bi bi-emoji-neutral"></i> Netral</span>
+                                        <span style="padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: rgba(251, 191, 36, 0.15); color: var(--clh-warning);">
+                                            <i class="bi bi-dash-circle me-1"></i>Netral
+                                        </span>
                                     @endif
                                 </td>
                                 <td>
-                                    <form action="{{ route('admin.articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyembunyikan/menghapus berita ini dari database?');">
+                                    <form action="{{ route('admin.articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita ini?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i> Hapus
+                                        <button type="submit" class="btn-cyber-outline-danger">
+                                            <i class="bi bi-trash me-1"></i>Hapus
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486747.png" alt="No data" width="80" class="mb-3 opacity-50">
-                                    <p class="text-muted">Belum ada berita yang tersimpan di arsip.</p>
-                                    <small>Akses halaman News Intelligence di Dashboard User untuk men-trigger sistem penarikan data.</small>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="bi bi-inbox" style="font-size: 2.5rem; color: var(--clh-text-muted); opacity: 0.3;"></i>
+                                    <p class="mt-2" style="color: var(--clh-text-muted); font-size: 0.85rem;">Belum ada berita yang tersimpan di arsip.</p>
+                                    <small style="color: var(--clh-text-muted);">Akses halaman News Intelligence di Dashboard User untuk men-trigger sistem penarikan data.</small>
                                 </td>
                             </tr>
                             @endforelse
