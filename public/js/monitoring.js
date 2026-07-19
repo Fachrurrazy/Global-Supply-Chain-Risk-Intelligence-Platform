@@ -67,7 +67,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${cargoData.current_lat}&longitude=${cargoData.current_lng}&current_weather=true`)
                         .then(res => res.json())
                         .then(weatherData => {
-                            const windSpeed = weatherData.current_weather.windspeed;
+                            let windSpeed = 0;
+                            if (weatherData && weatherData.current_weather) {
+                                windSpeed = weatherData.current_weather.windspeed;
+                            } else {
+                                console.warn("Open-Meteo API error or invalid coordinates");
+                            }
                             
                             let etaStatus = windSpeed > 35 
                                 ? `<span class="badge bg-danger fs-6">🔴 DELAYED (Cuaca Buruk)</span>` 
@@ -107,6 +112,9 @@ document.addEventListener("DOMContentLoaded", function() {
                                     ${weatherAlert}
                                     ${miniMapHtml}
                                 </div>`;
+                        })
+                        .catch(err => {
+                            trackResult.innerHTML = `<div class="alert alert-danger">Terjadi kesalahan saat memuat data satelit cuaca.</div>`;
                         });
                 })
                 .catch(err => {
