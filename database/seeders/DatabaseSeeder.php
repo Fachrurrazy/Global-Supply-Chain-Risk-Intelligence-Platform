@@ -11,6 +11,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Buat akun default permanen agar tidak hilang saat Render restart
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin Dosen',
+                'password' => bcrypt('password123'),
+                'role' => 'admin' // Sesuaikan jika ada kolom role
+            ]
+        );
+
         // Beritahu Laravel untuk menjalankan LogisticsSeeder juga!
         $this->call([
             LogisticsSeeder::class,
