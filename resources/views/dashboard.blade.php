@@ -245,7 +245,7 @@
             padding: 12px 24px;
             position: sticky;
             top: 0;
-            z-index: 50;
+            z-index: 1030;
         }
 
         .search-bar-custom {

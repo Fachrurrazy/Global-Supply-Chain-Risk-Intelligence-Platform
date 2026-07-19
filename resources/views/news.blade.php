@@ -122,7 +122,7 @@
 
         /* ── MAIN ── */
         #page-content-wrapper { flex-grow: 1; width: 100%; margin-left: var(--clh-sidebar-width); min-height: 100vh; }
-        .enterprise-navbar { background: var(--clh-bg-panel); backdrop-filter: blur(20px); border-bottom: 1px solid var(--clh-border); padding: 12px 24px; position: sticky; top: 0; z-index: 50; }
+        .enterprise-navbar { background: var(--clh-bg-panel); backdrop-filter: blur(20px); border-bottom: 1px solid var(--clh-border); padding: 12px 24px; position: sticky; top: 0; z-index: 1030; }
         .theme-toggle-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--clh-border); background: var(--clh-bg-input); color: var(--clh-text-secondary); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; transition: var(--clh-transition); }
         .theme-toggle-btn:hover { border-color: var(--clh-accent); color: var(--clh-accent); box-shadow: var(--clh-glow); }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }

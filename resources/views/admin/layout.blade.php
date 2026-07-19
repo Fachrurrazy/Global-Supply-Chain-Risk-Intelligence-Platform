@@ -194,7 +194,7 @@
             border-radius: 0;
             padding: 14px 24px;
             display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 50;
+            position: sticky; top: 0; z-index: 1030;
             margin-bottom: 0;
         }
 
