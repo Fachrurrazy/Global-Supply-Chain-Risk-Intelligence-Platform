@@ -8,7 +8,9 @@ if [ ! -f .env ]; then
     echo ".env created from .env.example"
 fi
 
-# 2. Ubah konfigurasi database ke SQLite secara otomatis
+# 2. Ubah konfigurasi database dan environment
+sed -i 's/APP_ENV=.*/APP_ENV=production/' .env
+sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' .env
 sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
 sed -i 's/DB_DATABASE=.*/DB_DATABASE=\/var\/www\/html\/database\/database.sqlite/' .env
 sed -i 's/DB_HOST=/#DB_HOST=/' .env
