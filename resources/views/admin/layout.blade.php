@@ -516,8 +516,16 @@
     // Mobile Sidebar Toggle
     const adminSidebarToggle = document.getElementById('adminSidebarToggle');
     if (adminSidebarToggle) {
-        adminSidebarToggle.addEventListener('click', () => {
+        adminSidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             document.getElementById('sidebar').classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('show') && !sidebar.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
         });
     }
 </script>

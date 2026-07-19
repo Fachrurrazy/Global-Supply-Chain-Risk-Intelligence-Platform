@@ -1210,8 +1210,17 @@
     // ── MOBILE SIDEBAR TOGGLE ──
     const sidebarToggle = document.getElementById('sidebarToggle');
     if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', () => {
+        sidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             document.getElementById('sidebar-wrapper').classList.toggle('show');
+        });
+        
+        // Tutup sidebar jika user klik di luar area sidebar
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar-wrapper');
+            if (sidebar.classList.contains('show') && !sidebar.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
         });
     }
 </script>
