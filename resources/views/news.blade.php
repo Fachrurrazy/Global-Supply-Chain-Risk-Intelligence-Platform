@@ -337,6 +337,24 @@
             #sidebar-wrapper.show { transform: translateX(0); }
             #page-content-wrapper { margin-left: 0; }
         }
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 991.98px) {
+            #sidebar-wrapper {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1040;
+            }
+            #sidebar-wrapper.show {
+                transform: translateX(0);
+            }
+            #page-content-wrapper {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+            .sidebar-toggler {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body>

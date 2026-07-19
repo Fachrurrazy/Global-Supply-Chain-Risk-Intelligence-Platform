@@ -403,6 +403,23 @@
             transition: var(--clh-transition);
         }
         .btn-cyber-outline-danger:hover { background: rgba(248, 113, 113, 0.1); color: var(--clh-negative); }
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 991.98px) {
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1040;
+                position: fixed;
+                height: 100vh;
+            }
+            #sidebar.show {
+                transform: translateX(0);
+            }
+            #content {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+        }
     </style>
 
     @yield('styles')
@@ -449,7 +466,12 @@
     <!-- Page Content -->
     <div id="content">
         <nav class="admin-navbar">
-            <span class="page-title">@yield('page_title', 'Overview')</span>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn d-lg-none" id="adminSidebarToggle" style="color: var(--clh-text-primary); border: 1px solid var(--clh-border); border-radius: var(--clh-radius-sm); padding: 4px 10px;">
+                    <i class="bi bi-list"></i>
+                </button>
+                <span class="page-title">@yield('page_title', 'Overview')</span>
+            </div>
             <div class="user-info">
                 <button id="themeToggle" class="theme-toggle-btn" title="Toggle Theme">
                     <i class="bi bi-moon-stars-fill"></i>
@@ -489,6 +511,14 @@
         localStorage.setItem('admin-theme', next);
         updateThemeIcon();
     });
+
+    // Mobile Sidebar Toggle
+    const adminSidebarToggle = document.getElementById('adminSidebarToggle');
+    if (adminSidebarToggle) {
+        adminSidebarToggle.addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+    }
 </script>
 @yield('scripts')
 </body>
