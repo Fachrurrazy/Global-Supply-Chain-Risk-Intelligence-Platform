@@ -21,9 +21,10 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Beritahu Laravel untuk menjalankan LogisticsSeeder juga!
+        // Beritahu Laravel untuk menjalankan LogisticsSeeder dan LexiconSeeder juga!
         $this->call([
             LogisticsSeeder::class,
+            LexiconSeeder::class,
         ]);
     }
 }
