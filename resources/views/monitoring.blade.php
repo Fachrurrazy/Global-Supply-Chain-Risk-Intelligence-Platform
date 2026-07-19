@@ -7,6 +7,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <meta name="description" content="Real-time vessel tracking, port infrastructure monitoring, and cargo tracking for global supply chains.">
     <title>Monitoring — Cyber-Logistic Hub</title>
 
