@@ -1,58 +1,66 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌐 Cyber-Logistic Hub: Global Supply Chain Risk Intelligence
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Platform Monitoring Risiko Rantai Pasok Global Berbasis Multi-API dan Analitik Data.
+Dibangun secara eksklusif untuk memenuhi seluruh spesifikasi **PROJECT FINAL**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Teknologi & Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Projek ini dibangun menggunakan *stack* teknologi modern dengan sentuhan antarmuka tingkat *Enterprise* (*Dark Mode / Glassmorphism*):
+- **Backend:** PHP 8.3 & Laravel 13
+- **Database:** MySQL (15+ Tabel Relasional)
+- **Frontend:** Bootstrap 5, Vanilla CSS, AJAX, JavaScript ES6
+- **Visualisasi Data:** Chart.js & Leaflet.js
+- **Environment:** Windows (Laragon) / Docker Ready
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🔗 Integrasi 6 API Eksternal (Gratis)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Sistem ini tidak hanya menyimpan data statis, tetapi juga berkomunikasi secara *real-time* dengan 6 layanan API global:
+1. **Open-Meteo API:** Pemantauan cuaca (suhu, curah hujan, arah & kecepatan angin, dsb) tanpa API Key.
+2. **World Bank API:** Pengambilan indikator makro ekonomi negara (GDP, Inflasi, Populasi, Ekspor, Impor).
+3. **REST Countries API:** Sinkronisasi master data geografis, bendera, mata uang, dan benua.
+4. **ExchangeRate API (open.er-api.com):** Data kurs mata uang dunia *real-time* terhadap Rupiah (IDR).
+5. **World Port Index Dataset:** Data infrastruktur dan koordinat pelabuhan dunia.
+6. **GNews API:** Sumber intelijen berita global terkait ekonomi, perdagangan, dan logistik.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🧠 Fitur Data Science / AI (Lexicon Based Sentiment Analysis)
 
-## Agentic Development
+Sesuai instruksi khusus, projek ini **TIDAK** menggunakan layanan AI berbayar untuk analisis teks, melainkan menggunakan sistem klasifikasi berbasis *Lexicon (Dictionary)* yang dibuat murni dengan logika PHP:
+*   Sistem membedah judul dan deskripsi berita dari API.
+*   Kata-kata dicocokkan dengan ratusan kata di tabel `positive_words` (contoh: *growth, stable*) dan `negative_words` (contoh: *crisis, delay, war*).
+*   Sistem menghitung persentase sentimen (Positif / Negatif / Netral) yang hasil akhirnya akan **mempengaruhi angka Risk Score** negara tersebut secara otomatis.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## ✨ 10 Fitur Utama Sistem
 
-php artisan boost:install
-```
+Sesuai dengan *blueprint* proyek, 10 sistem wajib ini telah tersedia dan berjalan 100%:
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+1.  **Global Country Dashboard:** Pengguna bisa mengklik peta atau memilih negara untuk melihat rincian komprehensif logistik, ekonomi, dan cuaca.
+2.  **Risk Scoring Engine:** Algoritma yang menghitung tingkat risiko suatu negara secara sistematis.
+    *   `Risk Score = Cuaca + Inflasi + Kurs Mata Uang + Sentimen Berita`
+    *   *Output:* Angka *Score* (0-100) beserta Label (*Low Risk, Medium Risk, High Risk*).
+3.  **Global Weather Monitoring:** Peta dunia interaktif (*Leaflet.js*) beserta data cuaca terkini untuk rute pengiriman laut dan udara.
+4.  **Currency Impact Dashboard:** Grafik *Chart.js* yang mensimulasikan tren fluktuasi 5 mata uang top dunia selama 7 hari, beserta tabel kurs puluhan mata uang.
+5.  **News Intelligence:** *Feed* daftar berita terbaru (terkait *supply chain / economy*) lengkap dengan label hasil *Sentiment Analysis*.
+6.  **Port Location Dashboard:** Pemetaan dinamis lokasi pelabuhan dunia. Terdapat fitur peta interaktif di admin panel untuk klik koordinat secara *live* saat menambah pelabuhan baru.
+7.  **Data Visualization Dashboard:** Deretan grafik tren indikator (GDP dll).
+8.  **Country Comparison Engine:** Fitur menjejerkan 2 negara secara berdampingan untuk mengkomparasi parameter (Risk, GDP, Inflasi, Cuaca) dalam bentuk tabel dan radar/bar chart.
+9.  **Favorite Monitoring List (Watchlist):** Pengguna dapat menyimpan/bookmark negara prioritas tinggi di daftar sisi navigasi *(sidebar)*.
+10. **Admin Dashboard:** Panel administratif tertutup untuk kelola Kargo, Pelabuhan, Master Data, hingga Kamus Sentimen.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📡 Daftar Internal REST API
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Projek ini telah memuat arsitektur API yang kompleks (>30 endpoint) dengan perlindungan sistem cache. Endpoint wajib untuk sistem monitoring antara lain:
+- `GET /api/countries` — Mengambil daftar wilayah geografis.
+- `GET /api/risk` — Mengambil daftar skor risiko berbasis kalkulasi sistem.
+- `GET /api/ports` — Mengambil data infrastruktur dan koordinat titik pelabuhan global.
+- `GET /api/news` — Menarik feed berita tersimpan yang telah dianalisis sentimennya.
+- `GET /api/currency` — Endpoint data nilai tukar mata uang dan seri grafik riwayat 7 hari.
