@@ -21,11 +21,13 @@ sed -i 's/DB_PASSWORD=/#DB_PASSWORD=/' .env
 # 3. Generate App Key (Penting untuk Laravel)
 php artisan key:generate --force
 
-# 4. Buat database SQLite jika belum ada dan jalankan migrasi beserta data awal (Seeder)
+# 4. Buat database SQLite jika belum ada dan jalankan migrasi beserta data awal
 touch /var/www/html/database/database.sqlite
 chown www-data:www-data /var/www/html/database/database.sqlite
 php artisan migrate --force
 php artisan db:seed --force
+php artisan sync:countries
+php artisan sync:ports
 
 # 5. Optimasi Cache untuk Production
 php artisan config:cache
