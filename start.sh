@@ -8,22 +8,24 @@ if [ ! -f .env ]; then
     echo ".env created from .env.example"
 fi
 
-# 2. Ubah konfigurasi database dan environment
+# 2. Ubah konfigurasi environment
 sed -i 's/APP_ENV=.*/APP_ENV=production/' .env
 sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' .env
-sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
-sed -i 's/DB_DATABASE=.*/DB_DATABASE=\/var\/www\/html\/database\/database.sqlite/' .env
-sed -i 's/DB_HOST=/#DB_HOST=/' .env
-sed -i 's/DB_PORT=/#DB_PORT=/' .env
-sed -i 's/DB_USERNAME=/#DB_USERNAME=/' .env
-sed -i 's/DB_PASSWORD=/#DB_PASSWORD=/' .env
+
+# Cek apakah variabel MYSQL_HOST disediakan (oleh Railway MySQL misalnya)
+if [ ! -z "$MYSQLHOST" ] || [ ! -z "$DB_HOST" ]; then
+    echo "MySQL Database Configuration Detected."
+    # Jangan timpa pengaturan DB karena akan menggunakan MySQL
+else
+    echo "No MySQL config found, falling back to SQLite..."
+    sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
+    sed -i 's/DB_DATABASE=.*/DB_DATABASE=\/var\/www\/html\/database\/database.sqlite/' .env
+    touch /var/www/html/database/database.sqlite
+    chown www-data:www-data /var/www/html/database/database.sqlite
+fi
 
 # 3. Generate App Key (Penting untuk Laravel)
 php artisan key:generate --force
-
-# 4. Buat database SQLite jika belum ada dan jalankan migrasi beserta data awal
-touch /var/www/html/database/database.sqlite
-chown www-data:www-data /var/www/html/database/database.sqlite
 php artisan migrate --force
 php artisan db:seed --force
 php artisan sync:countries
