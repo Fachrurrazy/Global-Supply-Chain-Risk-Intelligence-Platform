@@ -15,7 +15,7 @@ sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' .env
 # Cek apakah variabel MYSQL_HOST disediakan (oleh Railway MySQL misalnya)
 if [ ! -z "$MYSQLHOST" ] || [ ! -z "$DB_HOST" ]; then
     echo "MySQL Database Configuration Detected."
-    # Jangan timpa pengaturan DB karena akan menggunakan MySQL
+    sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
 else
     echo "No MySQL config found, falling back to SQLite..."
     sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
