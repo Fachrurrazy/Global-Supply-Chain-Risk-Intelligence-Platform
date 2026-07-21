@@ -1225,7 +1225,7 @@
     }
 </script>
 
-<script src="{{ asset('js/dashboard.js') }}?v={{ time() }}"></script>
+<script src="/js/dashboard.js?v={{ time() }}"></script>
 
 </body>
 </html>
