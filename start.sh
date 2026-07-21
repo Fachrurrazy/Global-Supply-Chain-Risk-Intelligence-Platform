@@ -39,4 +39,12 @@ php artisan view:cache
 echo "Setup completed! Starting Apache server..."
 
 # 6. Jalankan server Apache bawaan container Docker
+# Fix untuk Railway: Hapus MPM event/worker yang bentrok
+rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.*
+
+# Gunakan port dari Railway jika tersedia, atau 80
+PORT=${PORT:-80}
+sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf
+sed -i "s/:80/:$PORT/g" /etc/apache2/sites-available/*.conf
+
 apache2-foreground
