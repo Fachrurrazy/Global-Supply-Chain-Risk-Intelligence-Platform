@@ -198,9 +198,15 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     });
                 }
+            } else if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger">Gagal menarik data kurs mata uang.</td></tr>`;
             }
         })
-        .catch(err => console.error('Gagal memuat kurs:', err));
+        .catch(err => {
+            console.error('Gagal memuat kurs:', err);
+            const tbody = document.getElementById('exchangeTableBody');
+            if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger">Koneksi ke API Kurs Terputus.</td></tr>`;
+        });
 
     // ==========================================
     // 5. COMPARE ENGINE LOGIC

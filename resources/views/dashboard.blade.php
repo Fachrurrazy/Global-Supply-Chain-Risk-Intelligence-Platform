@@ -912,8 +912,8 @@
             <div class="row g-4">
 
                 <!-- ── MAP COLUMN ── -->
-                <div class="col-lg-8 d-flex flex-column">
-                    <div id="map" class="flex-grow-1"></div>
+                <div class="col-lg-8 d-flex flex-column" style="min-height: 600px;">
+                    <div id="map" class="flex-grow-1 rounded-3 shadow" style="border: 1px solid var(--clh-border);"></div>
                 </div>
 
                 <!-- ── RIGHT SIDEBAR COLUMN ── -->
