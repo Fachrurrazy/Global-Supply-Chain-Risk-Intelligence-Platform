@@ -26,5 +26,10 @@ class DatabaseSeeder extends Seeder
             LogisticsSeeder::class,
             LexiconSeeder::class,
         ]);
+
+        // Sinkronisasi data negara secara otomatis (penting untuk server Production seperti Railway)
+        $this->command->info('Menjalankan sinkronisasi data negara...');
+        \Illuminate\Support\Facades\Artisan::call('sync:countries');
+        $this->command->info('Sinkronisasi negara selesai.');
     }
 }
