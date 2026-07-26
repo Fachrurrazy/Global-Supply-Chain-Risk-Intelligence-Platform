@@ -211,6 +211,7 @@
             font-family: var(--clh-font-sans);
             transition: var(--clh-transition);
         }
+        .search-bar-custom option { background: var(--clh-bg-panel); color: var(--clh-text-primary); }
         .search-bar-custom:focus { border-color: var(--clh-accent); box-shadow: 0 0 0 3px rgba(var(--clh-accent-rgb), 0.15); color: var(--clh-text-primary); background: var(--clh-bg-input); outline: none; }
         .search-bar-custom::placeholder { color: var(--clh-text-muted); }
 

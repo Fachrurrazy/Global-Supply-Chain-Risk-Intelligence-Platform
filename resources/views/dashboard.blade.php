@@ -516,8 +516,26 @@
 
         .btn-cyber-outline:hover {
             background: rgba(var(--clh-accent-rgb), 0.1);
-            color: var(--clh-accent);
-            box-shadow: var(--clh-glow);
+            color: var(--clh-accent-secondary);
+            border-color: var(--clh-accent-secondary);
+            transform: translateY(-1px);
+        }
+
+        /* ── CUSTOM SEARCH BAR ── */
+        .search-bar-custom {
+            background-color: var(--clh-bg-panel);
+            color: var(--clh-text-primary);
+            border: 1px solid var(--clh-border-accent);
+        }
+        .search-bar-custom option {
+            background-color: var(--clh-bg-panel);
+            color: var(--clh-text-primary);
+        }
+        .search-bar-custom:focus {
+            background-color: var(--clh-bg-panel);
+            color: var(--clh-text-primary);
+            box-shadow: 0 0 0 0.25rem rgba(var(--clh-accent-rgb), 0.25);
+            border-color: var(--clh-accent);
         }
 
         /* ── TABLE STYLING ── */
