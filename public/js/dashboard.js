@@ -35,7 +35,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     data.data.forEach(country => {
                         // Populate select options for compare
                         let sel1 = document.getElementById('compareCountry1');
-                        let sel2 = document.getElementById('compareCountry2');
+                        let searchSelect = document.getElementById('searchCountryMap');
+                        if (searchSelect) {
+                            searchSelect.options.add(new Option(country.name, country.code));
+                        }
+                        
                         if (sel1 && sel2) {
                             sel1.options.add(new Option(country.name, country.code));
                             sel1.options[sel1.options.length - 1].dataset.lat = country.lat;
@@ -61,6 +65,22 @@ document.addEventListener("DOMContentLoaded", function() {
                             document.getElementById('riskScoreLabel').innerText = "Menghitung...";
                             document.getElementById('riskScoreValue').innerText = "-";
                             document.getElementById('riskScoreLabel').className = "badge bg-secondary text-white";
+
+                            // Konversi Mata Uang ke IDR
+                            const exRateEl = document.getElementById('countryExchangeRate');
+                            if (exRateEl) {
+                                exRateEl.innerText = 'Menghitung...';
+                                if (window.globalExchangeRates && country.currency) {
+                                    const rateInfo = window.globalExchangeRates.find(r => r.code === country.currency);
+                                    if (rateInfo) {
+                                        exRateEl.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(rateInfo.value);
+                                    } else {
+                                        exRateEl.innerText = '-';
+                                    }
+                                } else {
+                                    exRateEl.innerText = 'Data belum siap';
+                                }
+                            }
 
                             fetch(`/api/country-data/${country.code}?lat=${country.lat}&lng=${country.lng}&name=${encodeURIComponent(country.name)}`)
                                 .then(res => res.json())
@@ -140,6 +160,19 @@ document.addEventListener("DOMContentLoaded", function() {
                                 });
                         });
                     });
+
+                    // Event Listener untuk Search Dropdown
+                    const searchSelect = document.getElementById('searchCountryMap');
+                    if (searchSelect) {
+                        searchSelect.addEventListener('change', function() {
+                            const code = this.value;
+                            if (code && window.appMarkers[code]) {
+                                const marker = window.appMarkers[code];
+                                window.appMap.setView(marker.getLatLng(), 5);
+                                marker.fire('click');
+                            }
+                        });
+                    }
                 }
             });
     }
@@ -150,6 +183,9 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(res => res.json())
         .then(data => {
             const tbody = document.getElementById('exchangeTableBody');
+            if(data.status === 'success') {
+                window.globalExchangeRates = data.data; // Simpan global untuk dipakai di klik peta
+            }
             if(data.status === 'success' && tbody) {
                 tbody.innerHTML = ''; 
                 data.data.forEach(item => {

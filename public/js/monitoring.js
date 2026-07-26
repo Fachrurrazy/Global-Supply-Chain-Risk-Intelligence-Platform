@@ -22,11 +22,56 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(res => res.json())
             .then(response => {
                 if(response.status === 'success') {
+                    window.allPortMarkers = [];
+                    let uniqueCountries = new Set();
+
                     response.data.forEach(port => {
-                        L.marker([port.lat, port.lng], {icon: portIcon})
-                         .addTo(map)
+                        let marker = L.marker([port.lat, port.lng], {icon: portIcon})
                          .bindTooltip(`<b>${port.name}</b><br>${port.country}`);
+                        marker.countryName = port.country;
+                        window.allPortMarkers.push(marker);
+                        uniqueCountries.add(port.country);
+                        
+                        // Tampilkan semua secara default
+                        marker.addTo(map);
                     });
+
+                    // Populate Dropdown dan Event Listener
+                    const searchSelect = document.getElementById('searchPortCountry');
+                    if (searchSelect) {
+                        let sortedCountries = Array.from(uniqueCountries).sort();
+                        sortedCountries.forEach(c => {
+                            searchSelect.options.add(new Option(c, c));
+                        });
+
+                        searchSelect.addEventListener('change', function() {
+                            const selected = this.value;
+                            
+                            // 1. Bersihkan peta dari semua marker pelabuhan
+                            window.allPortMarkers.forEach(m => map.removeLayer(m));
+                            
+                            if (selected === "") {
+                                // Tampilkan kembali semua pelabuhan
+                                window.allPortMarkers.forEach(m => m.addTo(map));
+                                map.setView([20, 10], 2);
+                            } else {
+                                // Tampilkan HANYA pelabuhan dari negara yang dipilih
+                                let visibleMarkers = [];
+                                window.allPortMarkers.forEach(m => {
+                                    if (m.countryName === selected) {
+                                        m.addTo(map);
+                                        visibleMarkers.push(m);
+                                    }
+                                });
+                                
+                                // Zoom otomatis agar mencakup pelabuhan yang tampil
+                                if (visibleMarkers.length > 0) {
+                                    let group = new L.featureGroup(visibleMarkers);
+                                    map.fitBounds(group.getBounds(), {padding: [50, 50], maxZoom: 6});
+                                }
+                            }
+                        });
+                    }
                 }
             })
             .catch(err => console.error("Gagal memuat pelabuhan:", err));

@@ -913,6 +913,11 @@
 
                 <!-- ── MAP COLUMN ── -->
                 <div class="col-lg-8 d-flex flex-column" style="min-height: 600px;">
+                    <div class="mb-3">
+                        <select id="searchCountryMap" class="form-select search-bar-custom w-100 shadow-sm" style="font-size: 1rem; padding: 12px 20px;">
+                            <option value="">🌍 Cari dan Pilih Negara di Peta...</option>
+                        </select>
+                    </div>
                     <div id="map" class="flex-grow-1 rounded-3 shadow" style="border: 1px solid var(--clh-border);"></div>
                 </div>
 
@@ -928,6 +933,11 @@
                                     <span class="country-meta-item">Code: <strong id="countryCode">-</strong></span>
                                     <span class="country-meta-item">Region: <strong id="countryRegion">-</strong></span>
                                     <span class="country-meta-item">Currency: <strong id="countryCurrency">-</strong></span>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="badge bg-secondary" style="font-size: 0.8rem; font-weight: 500;">
+                                        Nilai Tukar (IDR): <strong id="countryExchangeRate" class="text-info">-</strong>
+                                    </span>
                                 </div>
                             </div>
                             <button id="btnWatchlist" class="btn-cyber-outline d-none" onclick="toggleWatchlist()">

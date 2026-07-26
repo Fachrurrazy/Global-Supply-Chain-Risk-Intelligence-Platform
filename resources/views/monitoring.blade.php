@@ -570,10 +570,15 @@
 
                             <!-- TAB: Port Infrastructure -->
                             <div class="tab-pane fade" id="pills-ports" role="tabpanel">
-                                <p style="color: var(--clh-text-muted); font-size: 0.85rem; margin-bottom: 16px;">
-                                    <i class="bi bi-pin-map me-1" style="color: var(--clh-accent);"></i>
-                                    Major port infrastructure across 35 supply chain nations.
-                                </p>
+                                <div class="mb-3 d-flex align-items-center justify-content-between">
+                                    <p style="color: var(--clh-text-muted); font-size: 0.85rem; margin-bottom: 0;">
+                                        <i class="bi bi-pin-map me-1" style="color: var(--clh-accent);"></i>
+                                        Major port infrastructure across 35 supply chain nations.
+                                    </p>
+                                    <select id="searchPortCountry" class="form-select search-bar-custom shadow-sm" style="width: 250px;">
+                                        <option value="">🌍 Filter Negara...</option>
+                                    </select>
+                                </div>
                                 <div id="map-ports"></div>
                             </div>
 
