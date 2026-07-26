@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             searchSelect.options.add(new Option(country.name, country.code));
                         }
                         
+                        let sel2 = document.getElementById('compareCountry2');
                         if (sel1 && sel2) {
                             sel1.options.add(new Option(country.name, country.code));
                             sel1.options[sel1.options.length - 1].dataset.lat = country.lat;
