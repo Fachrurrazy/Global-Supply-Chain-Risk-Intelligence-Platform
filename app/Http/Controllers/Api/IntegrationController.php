@@ -230,9 +230,18 @@ class IntegrationController extends Controller
                     }
                 }
 
+                // Prepare all rates for the map click feature
+                $allRatesIdr = [];
+                foreach ($rates as $cCode => $rate) {
+                    if ($rate > 0) {
+                        $allRatesIdr[$cCode] = 1 / $rate;
+                    }
+                }
+
                 return response()->json([
                     'status' => 'success', 
                     'data' => $exchangeData,
+                    'all_rates' => $allRatesIdr,
                     'chart' => [ 'labels' => $chartLabels, 'datasets' => $chartDatasets ]
                 ]);
             }

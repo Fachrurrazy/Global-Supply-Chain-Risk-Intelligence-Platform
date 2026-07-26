@@ -71,10 +71,10 @@ document.addEventListener("DOMContentLoaded", function() {
                             const exRateEl = document.getElementById('countryExchangeRate');
                             if (exRateEl) {
                                 exRateEl.innerText = 'Menghitung...';
-                                if (window.globalExchangeRates && country.currency) {
-                                    const rateInfo = window.globalExchangeRates.find(r => r.code === country.currency);
-                                    if (rateInfo) {
-                                        exRateEl.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(rateInfo.value);
+                                if (window.globalAllRates && country.currency) {
+                                    const valInIdr = window.globalAllRates[country.currency];
+                                    if (valInIdr) {
+                                        exRateEl.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(valInIdr);
                                     } else {
                                         exRateEl.innerText = '-';
                                     }
@@ -186,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const tbody = document.getElementById('exchangeTableBody');
             if(data.status === 'success') {
                 window.globalExchangeRates = data.data; // Simpan global untuk dipakai di klik peta
+                window.globalAllRates = data.all_rates; // Menyimpan semua rate mata uang
             }
             if(data.status === 'success' && tbody) {
                 tbody.innerHTML = ''; 
